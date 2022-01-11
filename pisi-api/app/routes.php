@@ -8,6 +8,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
+require_once("lib/controller/handle_books.php");
+
 return function (App $app) {
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
         // CORS Pre-Flight OPTIONS Request Handler
@@ -25,7 +27,7 @@ return function (App $app) {
 
             $get = $request->getQueryParams();
 
-            
+            $sql = "";
 
 
             if(isset($get["titulo"])){
