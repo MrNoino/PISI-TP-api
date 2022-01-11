@@ -11,11 +11,19 @@ class handle_books{
     
         $db_conn = $db_handler->get_connection();
 
-        $db_sta = $db_conn->query('SELECT * FROM livros.livros', PDO::FETCH_ASSOC);
+        $db_sta = $db_conn->query('SELECT livros.id, livros.ISBN, livros.titulo, livros.edicao, livros.ano_lancamento FROM livros.livros', PDO::FETCH_ASSOC);
 
         $result = $db_sta->fetchAll();
 
-        return $result;
+        $books = [];
+
+        foreach($result as $row){
+
+            $db_sta = $db_conn->prepare('SELECT autores.nome FROM livros.autores INNER JOIN livrosautores ON livrosautores.autor_id = autores.id WHERE livros.id = :id;');
+
+
+
+        }
 
     }
 
