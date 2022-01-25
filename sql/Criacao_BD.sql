@@ -1,42 +1,52 @@
-CREATE DATABASE livros;
+CREATE DATABASE books;
 
-USE livros;
+USE books;
 
-CREATE TABLE livros
+CREATE TABLE books
 (
+
 id INT NOT NULL PRIMARY KEY auto_increment,
 ISBN varchar(128) NOT NULL UNIQUE,
-titulo varchar(256) NOT NULL,
-edicao varchar(16),
-ano_lancamento date
+title varchar(256) NOT NULL,
+edtion varchar(16),
+launch_year int
+
 );
 
-CREATE TABLE autores
+CREATE TABLE authors
 (
+
 id INT NOT NULL PRIMARY KEY auto_increment,
-nome varchar(256) NOT NULL
+name varchar(256) NOT NULL
+
 );
 
-CREATE TABLE categorias
+CREATE TABLE categories
 (
+
 id INT NOT NULL PRIMARY KEY auto_increment,
-designacao varchar(256) NOT NULL
+category varchar(256) NOT NULL
+
 );
 
-CREATE TABLE livrosautores
+CREATE TABLE booksauthors
 (
-livro_id INT NOT NULL,
-autor_id INT NOT NULL,
-primary key (livro_id, autor_id),
-foreign key (livro_id) references livros(id),
-foreign key (autor_id) references autores(id)
+
+book_id INT NOT NULL,
+author_id INT NOT NULL,
+primary key (book_id, author_id),
+foreign key (book_id) references books(id),
+foreign key (author_id) references authors(id)
+
 );
 
-CREATE TABLE livroscategorias
+CREATE TABLE bookscategories
 (
-livro_id INT NOT NULL,
-categoria_id INT NOT NULL,
-primary key (livro_id, categoria_id),
-foreign key (livro_id) references livros(id),
-foreign key (categoria_id) references categorias(id)
+
+book_id INT NOT NULL,
+category_id INT NOT NULL,
+primary key (book_id, category_id),
+foreign key (book_id) references books(id),
+foreign key (category_id) references categories(id)
+
 );

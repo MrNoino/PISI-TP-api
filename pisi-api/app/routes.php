@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use App\Application\Actions\User\ListUsersAction;
@@ -21,30 +22,71 @@ return function (App $app) {
         return $response;
     });
 
-    $app->group('/livros', function(Group $group){
+    $app->group('/books', function (Group $group) {
 
-        $group->get("", function(Request $request, Response $response){
+        $group->get("", function (Request $request, Response $response) {
 
             $get = $request->getQueryParams();
 
-            $sql = "";
+            $handle_books = new handle_books();
 
+            $params = [];
 
-            if(isset($get["titulo"])){
+            $sql = 'SELECT books.id AS "ID", books.ISBN AS "ISBN", books.title AS "Title", books.edition AS "Edition", books.release_year AS "Launch Year" FROM books.books';
 
-                
+            if (isset($get["title"])) {
+
+                $params["title"] = ["value" => $get["title"], "table" => "books"];
 
             }
 
+            if (isset($get["release_year"])) {
 
-        });
+                $params["release_year"] = ["value" => $get["release_year"], "table" => "books"];
 
-        $group->post("", function(Request $request, Response $response){
+            }
 
+            if(isset($get["author"])){
 
-        });
+                $sql .= ' INNER JOIN books.booksauthors ON booksauthors.book_id = books.id INNER JOIN books.authors ON authors.id = booksauthors.author_id';
 
-    });
+                $params["name"] = ["value" => $get["author"], "table" => "authors"];
 
+            }
+
+            if (isset($get["category"])) {
+
+                $sql .= ' INNER JOIN books.bookscategories ON bookscategories.book_id = books.id INNER JOIN books.categories ON categories.id = bookscategories.category_id ';
+
+                $params["category"] = ["value" => $get["category"], "table" => "categories"];
+
+            }
+
+            
+            $response->getBody()->write(json_encode($handle_books->get_books($sql, $params)));
     
+            $response = $response->withHeader('Content-type', 'application/json');
+    
+            return $response;
+
+            
+
+
+
+        });
+
+        $group->post("", function (Request $request, Response $response) {
+
+            $handle_books = new handle_books();
+
+            $handle_books->post_book($_POST);
+
+            $response->getBody()->write(json_encode(["Mensagem"=> "Livro adicionado com sucesso"], JSON_FORCE_OBJECT));
+    
+            $response = $response->withHeader('Content-type', 'application/json');
+    
+            return $response;
+
+        });
+    });
 };
