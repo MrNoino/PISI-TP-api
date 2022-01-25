@@ -11,6 +11,10 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 require_once("lib/controller/handle_books.php");
 
+require_once("lib/controller/handle_authors.php");
+
+require_once("lib/controller/handle_categories.php");
+
 return function (App $app) {
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
         // CORS Pre-Flight OPTIONS Request Handler
@@ -62,16 +66,23 @@ return function (App $app) {
 
             }
 
-            
-            $response->getBody()->write(json_encode($handle_books->get_books($sql, $params)));
+            $books = $handle_books->get_books($sql, $params);
+
+            if(count($books) > 0){
+
+                $response->getBody()->write(json_encode($books));
+
+            }else{
+
+                $response = $response->withStatus(404);
+
+                $response->getBody()->write(json_encode(["Message" => "Nenhum livro encontrado"], JSON_FORCE_OBJECT));
+
+            }
     
             $response = $response->withHeader('Content-type', 'application/json');
     
             return $response;
-
-            
-
-
 
         });
 
@@ -89,4 +100,53 @@ return function (App $app) {
 
         });
     });
+
+    $app->get("/authors", function (Request $request, Response $response) {
+
+        $handle_authors = new handle_authors();
+
+        $authors = $handle_authors->get_authors();
+
+        if(count($authors) > 0){
+
+            $response->getBody()->write(json_encode($authors));
+
+        }else{
+
+            $response = $response->withStatus(404);
+
+            $response->getBody()->write(json_encode(["Message" => "Nenhum autor encontrado"], JSON_FORCE_OBJECT));
+
+        }
+
+        $response = $response->withHeader('Content-type', 'application/json');
+    
+        return $response;
+        
+    });
+
+    $app->get("/categories", function (Request $request, Response $response) {
+
+        $handle_categories = new handle_categories();
+
+        $categories = $handle_categories->get_categories();
+
+        if(count($categories) > 0){
+
+            $response->getBody()->write(json_encode($categories));
+
+        }else{
+
+            $response = $response->withStatus(404);
+
+            $response->getBody()->write(json_encode(["Message" => "Nenhuma categoria encontrada"], JSON_FORCE_OBJECT));
+
+        }
+        
+        $response = $response->withHeader('Content-type', 'application/json');
+    
+        return $response;
+        
+    });
+
 };
