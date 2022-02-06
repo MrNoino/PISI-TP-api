@@ -38,9 +38,9 @@ class handle_books{
 
         foreach($books_result as $row){
 
-            $db_sta = $db_conn->prepare('SELECT authors.name AS "Name" FROM books.authors INNER JOIN books.booksauthors ON booksauthors.author_id = authors.id WHERE booksauthors.book_id = :id;');
+            $db_sta = $db_conn->prepare('SELECT authors.name AS "name" FROM books.authors INNER JOIN books.booksauthors ON booksauthors.author_id = authors.id WHERE booksauthors.book_id = :id;');
 
-            $db_sta->bindValue(":id", $row["ID"]);
+            $db_sta->bindValue(":id", $row["id"]);
 
             $db_sta->execute();
 
@@ -48,11 +48,11 @@ class handle_books{
 
             $authors_result = $db_sta->fetchAll();
 
-            $row["Authors"] = $authors_result;
+            $row["authors"] = $authors_result;
 
-            $db_sta = $db_conn->prepare('SELECT categories.category AS "Category" FROM books.categories INNER JOIN books.bookscategories ON bookscategories.category_id = categories.id WHERE bookscategories.book_id = :id;');
+            $db_sta = $db_conn->prepare('SELECT categories.category AS "category" FROM books.categories INNER JOIN books.bookscategories ON bookscategories.category_id = categories.id WHERE bookscategories.book_id = :id;');
 
-            $db_sta->bindValue(":id", $row["ID"]);
+            $db_sta->bindValue(":id", $row["id"]);
 
             $db_sta->execute();
 
@@ -60,7 +60,7 @@ class handle_books{
 
             $categories_result = $db_sta->fetchAll();
 
-            $row["Categories"] = $categories_result;
+            $row["categories"] = $categories_result;
 
             $books[] = $row;
 

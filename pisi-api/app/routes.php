@@ -17,18 +17,21 @@ require_once("lib/controller/handle_categories.php");
 
 return function (App $app) {
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
-        // CORS Pre-Flight OPTIONS Request Handler
+        
         return $response;
+
     });
 
     $app->get('/', function (Request $request, Response $response) {
+
         $response->getBody()->write('Bem vindo à API de livros');
         return $response;
+        
     });
 
-    $app->group('/books', function (Group $group) {
+    $app->group('/books/', function (Group $group) {
 
-        $group->get("", function (Request $request, Response $response) {
+        $group->get("/", function (Request $request, Response $response) {
 
             $get = $request->getQueryParams();
 
@@ -36,7 +39,7 @@ return function (App $app) {
 
             $params = [];
 
-            $sql = 'SELECT books.id AS "ID", books.ISBN AS "ISBN", books.title AS "Title", books.edition AS "Edition", books.release_year AS "Launch Year" FROM books.books';
+            $sql = 'SELECT books.id AS "id", books.ISBN AS "isbn", books.title AS "title", books.edition AS "edition", books.release_year AS "release_year" FROM books.books';
 
             if (isset($get["title"])) {
 
@@ -76,7 +79,7 @@ return function (App $app) {
 
                 $response = $response->withStatus(404);
 
-                $response->getBody()->write(json_encode(["Message" => "Nenhum livro encontrado"], JSON_FORCE_OBJECT));
+                $response->getBody()->write(json_encode(["message" => "Nenhum livro encontrado"], JSON_FORCE_OBJECT));
 
             }
     
@@ -86,13 +89,25 @@ return function (App $app) {
 
         });
 
-        $group->post("", function (Request $request, Response $response) {
+        $group->post("/", function (Request $request, Response $response) {
 
             $handle_books = new handle_books();
 
+            if(empty($_POST["isbn"]) || empty($_POST["title"]) || empty($_POST["edition"]) || empty($_POST["release_year"]) || empty($_POST["authors"]) || empty($_POST["categories"])){
+
+                $response = $response->withStatus(400);
+
+                $response->getBody()->write(json_encode(["message" => "Pedido mal formado"], JSON_FORCE_OBJECT));
+    
+                $response = $response->withHeader('Content-type', 'application/json');
+
+                return $response;
+
+            }
+
             $handle_books->post_book($_POST);
 
-            $response->getBody()->write(json_encode(["Mensagem"=> "Livro adicionado com sucesso"], JSON_FORCE_OBJECT));
+            $response->getBody()->write(json_encode(["message" => "Livro adicionado com sucesso"], JSON_FORCE_OBJECT));
     
             $response = $response->withHeader('Content-type', 'application/json');
     
@@ -101,7 +116,7 @@ return function (App $app) {
         });
     });
 
-    $app->get("/authors", function (Request $request, Response $response) {
+    $app->get("/authors/", function (Request $request, Response $response) {
 
         $handle_authors = new handle_authors();
 
@@ -115,7 +130,7 @@ return function (App $app) {
 
             $response = $response->withStatus(404);
 
-            $response->getBody()->write(json_encode(["Message" => "Nenhum autor encontrado"], JSON_FORCE_OBJECT));
+            $response->getBody()->write(json_encode(["message" => "Nenhum autor encontrado"], JSON_FORCE_OBJECT));
 
         }
 
@@ -125,7 +140,7 @@ return function (App $app) {
         
     });
 
-    $app->get("/categories", function (Request $request, Response $response) {
+    $app->get("/categories/", function (Request $request, Response $response) {
 
         $handle_categories = new handle_categories();
 
@@ -139,7 +154,7 @@ return function (App $app) {
 
             $response = $response->withStatus(404);
 
-            $response->getBody()->write(json_encode(["Message" => "Nenhuma categoria encontrada"], JSON_FORCE_OBJECT));
+            $response->getBody()->write(json_encode(["message" => "Nenhuma categoria encontrada"], JSON_FORCE_OBJECT));
 
         }
         
