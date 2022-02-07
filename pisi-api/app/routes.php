@@ -29,7 +29,7 @@ return function (App $app) {
         
     });
 
-    $app->group('/books/', function (Group $group) {
+    $app->group('/books', function (Group $group) {
 
         $group->get("/", function (Request $request, Response $response) {
 
